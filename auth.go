@@ -43,7 +43,7 @@ func AuthMiddleware() gin.HandlerFunc {
 	}
 }
 
-func loginHandler(c *gin.Context) {
+func LoginHandler(c *gin.Context) {
 	var user User
 	if err := c.ShouldBind(&user); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error:": err.Error()})
@@ -73,7 +73,7 @@ func loginHandler(c *gin.Context) {
 	}
 }
 
-func profileHandler(c *gin.Context) {
+func ProfileHandler(c *gin.Context) {
 	// ambil username dari jwt token
 	claims := c.MustGet("claims").(jwt.MapClaims)
 	username := claims["username"].(string)
