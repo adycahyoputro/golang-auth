@@ -43,9 +43,9 @@ func AuthMiddleware() gin.HandlerFunc {
 	}
 }
 
-func LoginHandler(c *gin.Context) gin.HandlerFunc {
+func LoginHandler() gin.HandlerFunc {
 	var user User
-	return func(ctx *gin.Context) {
+	return func(c *gin.Context) {
 		if err := c.ShouldBind(&user); err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{"error:": err.Error()})
 			return
