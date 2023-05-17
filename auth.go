@@ -43,34 +43,37 @@ func AuthMiddleware() gin.HandlerFunc {
 	}
 }
 
-func LoginHandler(c *gin.Context) {
+func LoginHandler(c *gin.Context) gin.HandlerFunc {
 	var user User
-	if err := c.ShouldBind(&user); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error:": err.Error()})
-		return
-	}
-
-	//logic authentication
-	if user.Username == "enigma" && user.Password == "12345" {
-		// bikin code untuk generate token
-		token := jwt.New(jwt.SigningMethodHS256)
-
-		claims := token.Claims.(jwt.MapClaims)
-
-		claims["username"] = user.Username
-		claims["exp"] = time.Now().Add(time.Minute * 1).Unix()
-
-		var jwtKeyByte = []byte(jwtKey)
-		tokenString, err := token.SignedString(jwtKeyByte)
-		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": "failed generate token"})
+	return func(ctx *gin.Context) {
+		if err := c.ShouldBind(&user); err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error:": err.Error()})
 			return
 		}
 
-		c.JSON(http.StatusOK, gin.H{"token": tokenString})
-	} else {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "invalid credentials"})
+		//logic authentication
+		if user.Username == "enigma" && user.Password == "12345" {
+			// bikin code untuk generate token
+			token := jwt.New(jwt.SigningMethodHS256)
+
+			claims := token.Claims.(jwt.MapClaims)
+
+			claims["username"] = user.Username
+			claims["exp"] = time.Now().Add(time.Minute * 1).Unix()
+
+			var jwtKeyByte = []byte(jwtKey)
+			tokenString, err := token.SignedString(jwtKeyByte)
+			if err != nil {
+				c.JSON(http.StatusInternalServerError, gin.H{"error": "failed generate token"})
+				return
+			}
+
+			c.JSON(http.StatusOK, gin.H{"token": tokenString})
+		} else {
+			c.JSON(http.StatusUnauthorized, gin.H{"error": "invalid credentials"})
+		}
 	}
+
 }
 
 func ProfileHandler(c *gin.Context) {
